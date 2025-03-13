@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:earthquake_app/utils/helper_functions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/earthquake_model.dart';
@@ -65,6 +66,14 @@ class AppDataProvider extends ChangeNotifier {
     getEarthquakeData();
   }
 
+  Color getAlertColor(String color){
+    return switch(color){
+      "green" =>Colors.green,
+      "yellow" =>Colors.yellow,
+      "orange" =>Colors.orange,
+      _ => Colors.red
+    };
+  }
   Future<void> getEarthquakeData() async{
     final uri = Uri.https(baseUrl.authority, baseUrl.path, queryParameters);
     debugPrint(uri.toString());
