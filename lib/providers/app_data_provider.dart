@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:earthquake_app/utils/helper_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/earthquake_model.dart';
@@ -20,6 +21,7 @@ class AppDataProvider extends ChangeNotifier {
   String _orderBy = 'time';
   String? _currentCity;
   EarthquakeModel? earthquakeModel;
+
   final double _maxRadiusKmThreshold = 20001.6;
   bool _shouldUseLocation = false;
 
@@ -71,28 +73,27 @@ class AppDataProvider extends ChangeNotifier {
     getEarthquakeData();
   }
 
-  Color getAlertColor(String color){
-    return switch(color){
-      "green" =>Colors.green,
-      "yellow" =>Colors.yellow,
-      "orange" =>Colors.orange,
-      _ => Colors.red
+  Color getAlertColor(String color) {
+    return switch (color) {
+      "green" => Colors.green,
+      "yellow" => Colors.yellow,
+      "orange" => Colors.orange,
+      _ => Colors.red,
     };
   }
 
-  void setOrder(String order){
+  void setOrder(String order) {
     orderBy = order;
     notifyListeners();
     _setQueryParameter();
     getEarthquakeData();
   }
 
-
-
-  Future<void> getEarthquakeData() async{
+  Future<void> getEarthquakeData() async {
+    EasyLoading.show(status: "updated data fetching");
     final uri = Uri.https(baseUrl.authority, baseUrl.path, queryParameters);
     debugPrint(uri.toString());
-    try{
+    try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
@@ -100,8 +101,21 @@ class AppDataProvider extends ChangeNotifier {
         debugPrint(earthquakeModel!.features!.length.toString());
         notifyListeners();
       }
-    }catch(error){
+    } catch (error) {
       debugPrint(error.toString());
     }
+    EasyLoading.dismiss();
+  }
+
+  void setStartDate(DateTime dateTime) {
+    _startTime = getFormattedDateTime(dateTime.millisecondsSinceEpoch);
+    _setQueryParameter();
+    notifyListeners();
+  }
+
+  void setEndDate(DateTime dateTime) {
+    _endTime = getFormattedDateTime(dateTime.millisecondsSinceEpoch);
+    _setQueryParameter();
+    notifyListeners();
   }
 }
