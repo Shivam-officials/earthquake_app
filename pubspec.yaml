@@ -38,6 +38,7 @@ dependencies:
   provider: ^6.1.2
   http: ^1.3.0 # to handle the http request
   flutter_easyloading: ^3.0.5
+  url_launcher:
   geolocator: # for getting device location
   geocoding: # for converting co-ordinated to street address and vice versa
 

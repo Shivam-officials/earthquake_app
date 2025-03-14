@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:earthquake_app/pages/setting_page.dart';
@@ -6,6 +7,7 @@ import 'package:earthquake_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -56,21 +58,26 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 final data =
                     provider.earthquakeModel?.features?[index].properties;
-                return ListTile(
-                  title: Text(data!.place ?? data.title ?? "Unknown"),
-                  subtitle: Text(
-                    getFormattedDateTime(data.time!, 'EEE MMM dd yyyy hh:mm a'),
-                  ),
-                  trailing: Chip(
-                    label: Text(data.mag.toString()),
-                    avatar:
-                        data.alert == null
-                            ? null
-                            : CircleAvatar(
-                              backgroundColor: provider.getAlertColor(
-                                data.alert!,
+                return Card(
+                  child: ListTile(
+                    onLongPress: (){
+                      goToMap(provider.earthquakeModel?.features?[index].geometry?.coordinates,data.place!);
+                    },
+                    title: Text(data!.place ?? data.title ?? "Unknown"),
+                    subtitle: Text(
+                      getFormattedDateTime(data.time!, 'EEE MMM dd yyyy hh:mm a'),
+                    ),
+                    trailing: Chip(
+                      label: Text(data.mag.toString()),
+                      avatar:
+                          data.alert == null
+                              ? null
+                              : CircleAvatar(
+                                backgroundColor: provider.getAlertColor(
+                                  data.alert!,
+                                ),
                               ),
-                            ),
+                    ),
                   ),
                 );
               },
@@ -148,6 +155,26 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  void goToMap(List<num>? coordinates,String place) {
+    if (coordinates!.isNotEmpty) {
+      final latitude = coordinates[1];
+      final longitude = coordinates[0];
+      showMap(longitude,latitude,place);
+    }
+
+  }
+  Future<void> showMap(num longitude, num latitude,String label ) async {
+    String url = '';
+    if (Platform.isAndroid) {
+      url = 'geo:$latitude,$longitude';
+    }else{
+      url = 'http://maps.apple.com/?ll=$latitude,$longitude?q=$latitude,$longitude($label)';
+    }
+    if (await canLaunchUrlString(url)) {
+      launchUrlString(url);
+    }
   }
 }
 

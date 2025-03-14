@@ -20,6 +20,10 @@ class AppDataProvider extends ChangeNotifier {
   String _startTime = '';
   String _endTime = '';
   String _orderBy = 'time';
+
+  double _minmagnitude = 4;
+
+  double get minmagnitude => _minmagnitude;
   String? _currentCity;
   EarthquakeModel? earthquakeModel;
 
@@ -56,12 +60,17 @@ class AppDataProvider extends ChangeNotifier {
     _orderBy = value;
   }
 
+  set maxRadiusKm(double value) {
+    _maxRadiusKm = value;
+  }
+
+
   _setQueryParameter() {
     queryParameters['format'] = 'geojson';
     queryParameters['starttime'] = _startTime;
     queryParameters['endtime'] = _endTime;
     queryParameters['orderby'] = _orderBy;
-    queryParameters['minmagnitude'] = '4';
+    queryParameters['minmagnitude'] = '$_minmagnitude';
     queryParameters['latitude'] = '$_latitude';
     queryParameters['longitude'] = '$_longitude';
     queryParameters['maxradiuskm'] = '$_maxRadiusKm';
@@ -206,5 +215,17 @@ class AppDataProvider extends ChangeNotifier {
     }catch(error){
       debugPrint(error.toString());
     }
+  }
+
+  void setMinMagValue(double value) {
+    _minmagnitude = value;
+    _setQueryParameter();
+    notifyListeners();
+  }
+
+  void setMaxRadiusValue(double value) {
+    _maxRadiusKm = value;
+    _setQueryParameter();
+    notifyListeners();
   }
 }

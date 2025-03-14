@@ -58,12 +58,6 @@ class _SettingPageState extends State<SettingPage> {
                           icon: Icon(Icons.calendar_month),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          provider.getEarthquakeData();
-                        },
-                        child: const Text("Fetch According to Updated time"),
-                      ),
                     ],
                   ),
                 ),
@@ -83,13 +77,77 @@ class _SettingPageState extends State<SettingPage> {
                             : Text(
                               'Earthquake data wilt be shown within ${provider.maxRadiusKm} km radius from ${provider.currentCity}',
                             ),
-                    onChanged: (value) async{
+                    onChanged: (value) async {
                       EasyLoading.show(status: "Getting current location...");
                       provider.setLocation(value);
                       EasyLoading.dismiss();
                     },
                   ),
                 ),
+                Text(
+                  "Min Magnitude",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(0.toString()),
+                        Expanded(
+                          child: Slider(
+                            min: 0,
+                            max: 10,
+                            divisions: 20,
+                            label: context.read<AppDataProvider>().minmagnitude.toString(),
+                            value: context.read<AppDataProvider>().minmagnitude,
+                            onChanged: (value) {
+                              provider.setMinMagValue(value);
+                            },
+                          ),
+                        ),
+                        Text(10.toString()),
+                      ],
+                    ),
+                  ),
+                ),
+                Text(
+                  "Max Radius",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(500.toString()),
+                        Expanded(
+                          child: Slider(
+                            min: 500,
+                            max: 20001.6,
+                            divisions: 200,
+                            label: context.read<AppDataProvider>().maxRadiusKm.toString(),
+                            value: context.read<AppDataProvider>().maxRadiusKm,
+                            onChanged: (value) {
+                              provider.setMaxRadiusValue(value);
+                            },
+                          ),
+                        ),
+                        Text(20000.toString()),
+                      ],
+                    ),
+                  ),
+                ),
+                Divider(),
+                FilledButton(
+                  onPressed: () {
+                    provider.getEarthquakeData();
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Fetch According to Updated time"),
+                )
               ],
             ),
       ),
