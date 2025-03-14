@@ -42,6 +42,11 @@ class AppDataProvider extends ChangeNotifier {
 
   bool get shouldUseLocation => _shouldUseLocation;
 
+  //setter
+  set orderBy(String value) {
+    _orderBy = value;
+  }
+
   _setQueryParameter() {
     queryParameters['format'] = 'geojson';
     queryParameters['starttime'] = _startTime;
@@ -74,6 +79,16 @@ class AppDataProvider extends ChangeNotifier {
       _ => Colors.red
     };
   }
+
+  void setOrder(String order){
+    orderBy = order;
+    notifyListeners();
+    _setQueryParameter();
+    getEarthquakeData();
+  }
+
+
+
   Future<void> getEarthquakeData() async{
     final uri = Uri.https(baseUrl.authority, baseUrl.path, queryParameters);
     debugPrint(uri.toString());
