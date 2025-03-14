@@ -1,5 +1,6 @@
 import 'package:earthquake_app/providers/app_data_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 class SettingPage extends StatefulWidget {
@@ -18,6 +19,10 @@ class _SettingPageState extends State<SettingPage> {
         builder:
             (context, provider, child) => ListView(
               children: [
+                Text(
+                  "Time Setting",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 Card(
                   child: Column(
                     children: [
@@ -28,10 +33,10 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         subtitle: Text(provider.startTime),
                         trailing: IconButton(
-                          onPressed: () async{
+                          onPressed: () async {
                             final dt = await selectDate();
-                            if(dt != null){
-                             provider.setStartDate(dt);
+                            if (dt != null) {
+                              provider.setStartDate(dt);
                             }
                           },
                           icon: Icon(Icons.calendar_month),
@@ -44,9 +49,9 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         subtitle: Text(provider.endTime),
                         trailing: IconButton(
-                          onPressed: () async{
+                          onPressed: () async {
                             final dt = await selectDate();
-                            if(dt != null){
+                            if (dt != null) {
                               provider.setEndDate(dt);
                             }
                           },
@@ -62,13 +67,36 @@ class _SettingPageState extends State<SettingPage> {
                     ],
                   ),
                 ),
+                Text(
+                  "Location Setting",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Card(
+                  child: SwitchListTile(
+                    value: provider.shouldUseLocation,
+                    title: Text(
+                      provider.currentCity ?? "Your Location is Unknown ",
+                    ),
+                    subtitle:
+                        provider.currentCity == null
+                            ? Text("Enable your location first")
+                            : Text(
+                              'Earthquake data wilt be shown within ${provider.maxRadiusKm} km radius from ${provider.currentCity}',
+                            ),
+                    onChanged: (value) async{
+                      EasyLoading.show(status: "Getting current location...");
+                      provider.setLocation(value);
+                      EasyLoading.dismiss();
+                    },
+                  ),
+                ),
               ],
             ),
       ),
     );
   }
 
-  Future<DateTime?> selectDate() async{
+  Future<DateTime?> selectDate() async {
     final dt = await showDatePicker(
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
@@ -76,7 +104,7 @@ class _SettingPageState extends State<SettingPage> {
       context: context,
     );
 
-    if(dt != null){
+    if (dt != null) {
       return dt;
     }
     return null;

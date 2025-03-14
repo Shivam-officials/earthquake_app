@@ -4,6 +4,7 @@ import 'package:earthquake_app/pages/setting_page.dart';
 import 'package:earthquake_app/providers/app_data_provider.dart';
 import 'package:earthquake_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,8 +19,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: Text('Home page'),
         actions: [
+          IconButton(
+            onPressed: () {
+              context.read<AppDataProvider>().getEarthquakeData();
+            },
+            icon: Icon(Icons.refresh),
+          ),
           IconButton(onPressed: _showSortingDialog, icon: Icon(Icons.sort)),
           IconButton(
             onPressed: () {
@@ -30,13 +38,16 @@ class _HomePageState extends State<HomePage> {
             },
             icon: Icon(Icons.settings),
           ),
+
+
         ],
       ),
       body: Center(
         child: Consumer<AppDataProvider>(
           builder: (BuildContext context, provider, Widget? child) {
+
             if (provider.earthquakeModel == null) {
-              return CircularProgressIndicator();
+               return Text("is Your data connection on?");
             } else if (provider.earthquakeModel!.features!.isEmpty) {
               return Text('No data');
             }
